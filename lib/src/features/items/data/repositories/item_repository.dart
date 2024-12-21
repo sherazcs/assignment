@@ -19,17 +19,14 @@ class ItemRepository {
     return _itemsController.stream;
   }
 
-  /// Watch items from the local database and Firestore
   Stream<List<Item>> watchItems() async* {
     try {
-      // Fetch local items
       final localItems = await _localDb.getAllItems();
       yield localItems
           .map((e) => Item(
               id: e.id.toString(), title: e.title, description: e.description))
           .toList();
 
-      // Listen to Firestore updates
       _firestore.collection('items').snapshots().listen((snapshot) async {
         for (var doc in snapshot.docs) {
           final item = Item.fromMap(doc.data(), doc.id);
@@ -44,11 +41,10 @@ class ItemRepository {
     }
   }
 
-  /// Add a new item to Firestore and the local database
   Future<void> addItem(String id, String title, String description) async {
     try {
       final newItem = Item(id: id, title: title, description: description);
-      final docRef = await _firestore.collection('items').add(newItem.toMap());
+      await _firestore.collection('items').add(newItem.toMap());
       final itemId = await _localDb.insertItem(ItemEntity(
         id: int.parse(id),
         title: newItem.title,
@@ -61,7 +57,6 @@ class ItemRepository {
     }
   }
 
-  /// Update an existing item in Firestore and the local database
   Future<void> updateItem(String id, String title, String description) async {
     try {
       final updatedItem = Item(id: id, title: title, description: description);
@@ -85,15 +80,12 @@ class ItemRepository {
     }
   }
 
-  /// Fetch an item by its ID from Firestore or fallback to the local database
   Future<Item> getItemById(String id) async {
     try {
-      // Attempt to fetch the item from Firestore
       final doc = await _firestore.collection('items').doc(id).get();
       if (doc.exists) {
         return Item.fromMap(doc.data()!, doc.id);
       }
-      // Fallback to local database
       final localItem = await _localDb.getItemById(int.parse(id));
       if (localItem != null) {
         return Item(
@@ -109,7 +101,6 @@ class ItemRepository {
     }
   }
 
-  /// Delete an item from Firestore and the local database
   Future<void> deleteItem(String id) async {
     try {
       final querySnapshot =
@@ -121,7 +112,7 @@ class ItemRepository {
       }
       await _localDb.deleteItem(int.parse(id));
       _items.removeWhere((item) => item.id == id);
-      _itemsController.add(_items); // Notify listeners
+      _itemsController.add(_items);
     } catch (e) {
       throw Exception('Failed to delete item: $e');
     }

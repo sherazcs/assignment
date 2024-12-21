@@ -1,3 +1,5 @@
+import 'package:assignment_task/src/core/app_routes.dart';
+import 'package:assignment_task/src/core/constants/app_strings.dart';
 import 'package:assignment_task/src/features/auth/data/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,20 +13,21 @@ class ProfileScreen extends ConsumerWidget {
     final user = ref.watch(authStateProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: const Text(AppStrings.profile)),
       body: user.when(
         data: (user) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Email: ${user?.email ?? 'Guest'}'),
+              Text('${AppStrings.email}: ${user?.email ?? AppStrings.guest}'),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () async {
                   await ref.read(authProvider).signOut();
-                  context.go('/login');
+                  if (!context.mounted) return;
+                  context.go(AppRoutes.login);
                 },
-                child: const Text('Logout'),
+                child: const Text(AppStrings.logout),
               ),
             ],
           ),

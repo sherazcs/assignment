@@ -2,17 +2,18 @@ import 'package:assignment_task/src/features/items/data/repositories/item_reposi
 import 'package:assignment_task/src/features/items/data/repositories/local_db.dart';
 import 'package:assignment_task/src/models/item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 final itemRepositoryProvider = Provider<ItemRepository>((ref) {
   final firestore = FirebaseFirestore.instance;
-  final localDb = ref.read(localDBProvider); // Accessing LocalDatabase provider
+  final localDb = ref.read(localDBProvider);
   return ItemRepository(firestore, localDb);
 });
 
 final localDBProvider = Provider((ref) {
-  return LocalDatabase(); // Directly return the LocalDatabase instance
+  return LocalDatabase();
 });
 
 final syncServiceProvider = Provider((ref) =>
@@ -24,7 +25,6 @@ class SyncService {
 
   SyncService(this._itemRepo, this._localDB);
 
-  // Sync remote data to local database
   Future<void> syncData() async {
     final connectivity = await Connectivity().checkConnectivity();
     if (connectivity != ConnectivityResult.none) {
@@ -38,12 +38,11 @@ class SyncService {
           ));
         }
       } catch (e) {
-        print('Error syncing data: $e');
+        debugPrint('Error syncing data: $e');
       }
     }
   }
 
-  // Get items either from the local DB or remote source
   Future<List<Item>> getItems() async {
     final connectivity = await Connectivity().checkConnectivity();
     if (connectivity == ConnectivityResult.none) {

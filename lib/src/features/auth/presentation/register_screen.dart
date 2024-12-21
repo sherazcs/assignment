@@ -1,3 +1,4 @@
+import 'package:assignment_task/src/core/constants/app_strings.dart';
 import 'package:assignment_task/src/core/state/app_providers.dart';
 import 'package:assignment_task/src/core/widgets/custom_text_field.dart';
 import 'package:assignment_task/src/features/auth/data/repositories/auth_repository.dart';
@@ -10,33 +11,37 @@ class RegisterScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Register')),
+      appBar: AppBar(title: const Text(AppStrings.register)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CustomTextField(
-                hintText: 'Email',
+                hintText: AppStrings.email,
                 onChanged: (value) =>
                     ref.read(emailProvider.notifier).state = value),
             CustomTextField(
-                hintText: 'Password',
+                hintText: AppStrings.password,
                 obscureText: true,
                 onChanged: (value) =>
                     ref.read(passwordProvider.notifier).state = value),
             CustomTextField(
-                hintText: 'Confirm Password',
+                hintText: AppStrings.cpassword,
                 obscureText: true,
                 onChanged: (value) =>
                     ref.read(confirmPasswordProvider.notifier).state = value),
             ElevatedButton(
-              onPressed: () {
-                ref.read(authProvider).register(
+              onPressed: () async {
+                await ref.read(authProvider).register(
                       ref.read(emailProvider),
                       ref.read(passwordProvider),
                     );
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text(AppStrings.registerSuccess)),
+                );
               },
-              child: const Text('Register'),
+              child: const Text(AppStrings.register),
             ),
           ],
         ),

@@ -1,6 +1,7 @@
-import 'package:assignment_task/src/core/services/sync_service.dart'
-    as sync_service;
+import 'package:assignment_task/src/core/app_routes.dart';
+import 'package:assignment_task/src/core/constants/app_strings.dart';
 import 'package:assignment_task/src/core/state/app_providers.dart';
+import 'package:assignment_task/src/features/items/presentation/widget/delete_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,17 +15,17 @@ class MainScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Main Screen'),
+        title: const Text(AppStrings.main),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
-            onPressed: () => context.push('/profile'),
+            onPressed: () => context.push(AppRoutes.profile),
           ),
         ],
       ),
       body: items.when(
         data: (itemsList) => itemsList.isEmpty
-            ? const Center(child: Text('No items available.'))
+            ? const Center(child: Text(AppStrings.noItemsAvailable))
             : ListView.builder(
                 itemCount: itemsList.length,
                 itemBuilder: (context, index) {
@@ -32,12 +33,11 @@ class MainScreen extends ConsumerWidget {
                   return ListTile(
                     title: Text(item.title),
                     subtitle: Text(item.description),
-                    onTap: () =>
-                        context.push('/details/${item.id}'), // Navigate to edit
+                    onTap: () => context.push('/details/${item.id}'),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () {
-                        _confirmDelete(context, ref, item.id);
+                        confirmDelete(context, ref, item.id);
                       },
                     ),
                   );
@@ -48,44 +48,18 @@ class MainScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('An error occurred: $err'),
+              Text('${AppStrings.anErrorOccurred}: $err'),
               TextButton(
                 onPressed: () => ref.refresh(itemsProvider),
-                child: const Text('Retry'),
+                child: const Text(AppStrings.retry),
               ),
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/details/new'), // Navigate to add form
+        onPressed: () => context.push('${AppRoutes.details}/new'),
         child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  void _confirmDelete(BuildContext context, WidgetRef ref, String itemId) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Item'),
-        content: const Text('Are you sure you want to delete this item?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context), // Cancel
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              await ref
-                  .read(sync_service.itemRepositoryProvider)
-                  .deleteItem(itemId);
-              ref.refresh(itemsProvider);
-              Navigator.pop(context); // Close dialog
-            },
-            child: const Text('Delete'),
-          ),
-        ],
       ),
     );
   }

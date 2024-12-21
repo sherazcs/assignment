@@ -1,3 +1,5 @@
+import 'package:assignment_task/src/core/app_routes.dart';
+import 'package:assignment_task/src/core/constants/app_strings.dart';
 import 'package:assignment_task/src/core/state/app_providers.dart';
 import 'package:assignment_task/src/core/widgets/custom_text_field.dart';
 import 'package:assignment_task/src/features/auth/data/repositories/auth_repository.dart';
@@ -11,17 +13,17 @@ class LoginScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text(AppStrings.login)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CustomTextField(
-                hintText: 'Email',
+                hintText: AppStrings.email,
                 onChanged: (value) =>
                     ref.read(emailProvider.notifier).state = value),
             CustomTextField(
-                hintText: 'Password',
+                hintText: AppStrings.password,
                 obscureText: true,
                 onChanged: (value) =>
                     ref.read(passwordProvider.notifier).state = value),
@@ -33,21 +35,21 @@ class LoginScreen extends ConsumerWidget {
                     );
                 if (success) {
                   if (!context.mounted) return;
-                  context.go('/main');
+                  context.go(AppRoutes.main);
                 } else {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Login Failed')),
+                    const SnackBar(content: Text(AppStrings.loginFailed)),
                   );
                 }
               },
-              child: const Text('Login'),
+              child: const Text(AppStrings.login),
             ),
             TextButton(
               onPressed: () {
-                context.go('/register');
+                context.push(AppRoutes.register);
               },
-              child: const Text('Register'),
+              child: const Text(AppStrings.register),
             ),
           ],
         ),

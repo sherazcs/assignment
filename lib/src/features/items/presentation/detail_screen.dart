@@ -1,3 +1,4 @@
+import 'package:assignment_task/src/core/constants/app_strings.dart';
 import 'package:assignment_task/src/core/state/app_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,7 +7,7 @@ import 'package:assignment_task/src/core/services/sync_service.dart'
     as sync_service;
 
 class DetailScreen extends ConsumerWidget {
-  final String? itemId; // Null for adding a new item
+  final String? itemId;
   const DetailScreen({super.key, this.itemId});
 
   @override
@@ -26,24 +27,26 @@ class DetailScreen extends ConsumerWidget {
       }).catchError((e) {
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading item: $e')),
+          SnackBar(content: Text('${AppStrings.errorLoadingItem} $e')),
         );
       });
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(isEditMode ? 'Edit Item' : 'Add Item')),
+      appBar: AppBar(
+          title: Text(isEditMode ? AppStrings.editItem : AppStrings.addItem)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: titleController,
-              decoration: const InputDecoration(labelText: 'Title'),
+              decoration: const InputDecoration(labelText: AppStrings.title),
             ),
             TextField(
               controller: descriptionController,
-              decoration: const InputDecoration(labelText: 'Description'),
+              decoration:
+                  const InputDecoration(labelText: AppStrings.description),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -53,14 +56,13 @@ class DetailScreen extends ConsumerWidget {
 
                 if (title.isEmpty || description.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please fill in all fields')),
+                    const SnackBar(
+                        content: Text(AppStrings.pleaseFillInAllFields)),
                   );
                   return;
                 }
-
                 try {
                   if (isEditMode) {
-                    // Update existing item
                     await ref
                         .read(sync_service.itemRepositoryProvider)
                         .updateItem(
@@ -70,7 +72,6 @@ class DetailScreen extends ConsumerWidget {
                         );
                   } else {
                     final id = DateTime.now().millisecondsSinceEpoch.toString();
-                    // Add new item
                     await ref.read(sync_service.itemRepositoryProvider).addItem(
                           id,
                           title,
@@ -78,15 +79,16 @@ class DetailScreen extends ConsumerWidget {
                         );
                   }
                   if (!context.mounted) return;
+                  // ignore: unused_result
                   ref.refresh(itemsProvider);
-                  context.pop(); // Navigate back to the main screen
+                  context.pop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
+                    SnackBar(content: Text('${AppStrings.error}: $e')),
                   );
                 }
               },
-              child: Text(isEditMode ? 'Update' : 'Add'),
+              child: Text(isEditMode ? AppStrings.update : AppStrings.add),
             ),
           ],
         ),
