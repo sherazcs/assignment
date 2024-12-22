@@ -1,5 +1,6 @@
 import 'package:assignment_task/src/core/constants/app_strings.dart';
 import 'package:assignment_task/src/core/state/app_providers.dart';
+import 'package:assignment_task/src/core/widgets/common_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -33,6 +34,7 @@ class DetailScreen extends ConsumerWidget {
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
           title: Text(isEditMode ? AppStrings.editItem : AppStrings.addItem)),
       body: Padding(
@@ -49,7 +51,13 @@ class DetailScreen extends ConsumerWidget {
                   const InputDecoration(labelText: AppStrings.description),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
+            CommonElevatedButton(
+              text: isEditMode ? AppStrings.update : AppStrings.add,
+              elevation: 0.0,
+              borderRadius: 50,
+              width: 200,
+              height: 45,
+              style: TextStyle(fontSize: 18, color: Colors.white),
               onPressed: () async {
                 final title = titleController.text.trim();
                 final description = descriptionController.text.trim();
@@ -88,7 +96,6 @@ class DetailScreen extends ConsumerWidget {
                   );
                 }
               },
-              child: Text(isEditMode ? AppStrings.update : AppStrings.add),
             ),
           ],
         ),

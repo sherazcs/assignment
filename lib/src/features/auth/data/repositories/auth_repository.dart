@@ -9,7 +9,7 @@ class AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<bool> signIn(String email, String password) async {
-    try {
+    try { 
       final userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       return userCredential.user!.uid.isNotEmpty ? true : false;

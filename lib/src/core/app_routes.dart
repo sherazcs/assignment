@@ -5,7 +5,7 @@ class AppRoutes {
   static const register = '/register';
   static const main = '/main';
   static const profile = '/profile';
-  static const details = '/details/:id';
+  static const details = '/details';
 
   AppRoutes._();
 }

@@ -20,16 +20,16 @@ final syncServiceProvider = Provider((ref) =>
     SyncService(ref.read(itemRepositoryProvider), ref.read(localDBProvider)));
 
 class SyncService {
-  final ItemRepository _itemRepo;
+  final ItemRepository itemRepo;
   final LocalDatabase _localDB;
 
-  SyncService(this._itemRepo, this._localDB);
+  SyncService(this.itemRepo, this._localDB);
 
   Future<void> syncData() async {
     final connectivity = await Connectivity().checkConnectivity();
     if (connectivity != ConnectivityResult.none) {
       try {
-        final remoteItems = await _itemRepo.watchItems().first;
+        final remoteItems = await itemRepo.watchItems().first;
         for (var item in remoteItems) {
           await _localDB.insertItem(ItemEntity(
             id: int.parse(item.id),
@@ -52,7 +52,7 @@ class SyncService {
               id: e.id.toString(), title: e.title, description: e.description))
           .toList();
     } else {
-      final remoteItems = await _itemRepo.watchItems().first;
+      final remoteItems = await itemRepo.watchItems().first;
       for (var item in remoteItems) {
         await _localDB.insertItem(ItemEntity(
           id: int.parse(item.id),
